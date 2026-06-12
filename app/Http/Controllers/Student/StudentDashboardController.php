@@ -26,16 +26,20 @@ class StudentDashboardController extends Controller
 
     public function grades()
     {
-        $student = $this->getTargetStudent();
-        if (!$student || !$student->school_class_id) {
-            return view('student.grades', ['subjects' => [], 'student' => $student]);
+        $user = auth()->user();
+        $student = null;
+
+        if ($user->rola === 'rodzic') {
+            $student = $user->students()->first();
+        } else {
+            $student = $user;
         }
 
-        $subjects = Subject::with(['lessons.grades' => function ($query) use ($student) {
-            $query->where('student_id', $student->id);
-        }])->get();
+        if (!$student) {
+            abort(403, 'Do Twojego konta rodzica nie przypisano żadnego ucznia.');
+        }
 
-        return view('student.grades', compact('subjects', 'student'));
+        return view('student.grades', compact('student', 'subjects'));
     }
 
     public function attendance()

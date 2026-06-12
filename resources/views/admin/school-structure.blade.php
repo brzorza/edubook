@@ -44,7 +44,7 @@
                     <label class="block text-sm font-medium text-gray-700">Opis (opcjonalnie)</label>
                     <textarea name="description" class="mt-1 block w-full rounded border-gray-300 p-2 border focus:ring-blue-500 focus:outline-none"></textarea>
                 </div>
-                <button type="submit" class="w-full bg-indigo-600 text-white p-2 rounded font-bold hover:bg-indigo-700 transition">Dodaj przedmiot</button>
+                <button type="submit" class="w-full bg-blue-600 text-white p-2 rounded font-bold hover:bg-blue-700 transition">Dodaj przedmiot</button>
             </form>
         </div>
     </div>
@@ -70,7 +70,7 @@
                         @endforeach
                     </select>
                 </div>
-                <button type="submit" class="w-full bg-purple-600 text-white p-2 rounded font-bold hover:bg-purple-700 transition">Przypisz</button>
+                <button type="submit" class="w-full bg-blue-600 text-white p-2 rounded font-bold hover:bg-blue-700 transition">Przypisz</button>
             </form>
         </div>
 
@@ -97,7 +97,7 @@
                         @endforeach
                     </select>
                 </div>
-                <button type="submit" class="w-full bg-green-600 text-white p-2 rounded font-bold hover:bg-green-700 transition">Przypisz do klasy</button>
+                <button type="submit" class="w-full bg-blue-600 text-white p-2 rounded font-bold hover:bg-blue-700 transition">Przypisz do klasy</button>
             </form>
         </div>
     </div>

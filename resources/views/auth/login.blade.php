@@ -8,7 +8,9 @@
 </head>
 <body class="bg-gray-100 flex items-center justify-center h-screen">
     <div class="bg-white p-8 rounded-lg shadow-md w-96">
-        <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">EduBook</h2>
+        <div class="flex flex-col items-center space-x-3 px-1 py-1 border-slate-700 mb-4">
+            <img src="{{ asset('images/logo.png') }}" alt="EduBook Logo" class="h-40 w-auto object-contain">
+        </div>
         
         @if(session('info'))
             <div class="bg-blue-100 text-blue-700 p-2 rounded mb-4 text-sm text-center">

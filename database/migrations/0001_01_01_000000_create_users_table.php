@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('password');
             $table->string('rola');
+            $table->foreignId('parent_id')->nullable()->constrained('users')->onDelete('set null');
             $table->boolean('czy_pierwsze_logowanie')->default(true);
             $table->timestamp('last_activity')->nullable();
             $table->rememberToken();

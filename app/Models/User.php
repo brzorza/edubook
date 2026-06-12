@@ -31,6 +31,16 @@ class User extends Authenticatable
         'last_activity' => 'datetime',
     ];
 
+    public function students(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(User::class, 'parent_id');
+    }
+
+    public function parent(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(User::class, 'parent_id');
+    }
+
     public function schoolClass()
     {
         return $this->belongsTo(SchoolClass::class, 'school_class_id');

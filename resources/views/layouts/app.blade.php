@@ -13,8 +13,11 @@
         
         <div id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-slate-800 text-white flex flex-col justify-between shadow-xl transform -translate-x-full lg:translate-x-0 lg:static lg:inset-auto transition-transform duration-300 ease-in-out">
             <div>
-                <div class="p-5 text-2xl font-bold tracking-wider text-center border-b border-slate-700 bg-slate-900 flex justify-between items-center lg:justify-center">
-                    <span>EduBook</span>
+                <div class="p-5 text-2xl font-bold tracking-wider text-center border-b border-slate-850 bg-slate-850 flex justify-between items-center lg:justify-center">
+                    <div class="flex items-center space-x-3 px-4 py-5 border-slate-700 mb-4">
+                        <img src="{{ asset('images/logo.png') }}" alt="EduBook Logo" class="h-10 w-auto object-contain">
+                        <span class="text-xl font-black tracking-wider text-white">EduBook</span>
+                    </div>
                     <button onclick="toggleSidebar()" class="text-white lg:hidden focus:outline-none">
                         <i class="fa-solid fa-xmark"></i>
                     </button>

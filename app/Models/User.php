@@ -15,9 +15,10 @@ class User extends Authenticatable
         'email',
         'password',
         'rola',
+        'school_class_id',
+        'parent_id',
         'czy_pierwsze_logowanie',
         'last_activity',
-        'school_class_id',
     ];
 
     protected $hidden = [

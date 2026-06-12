@@ -46,7 +46,7 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Rola w systemie</label>
-                    <select name="rola" id="role_select" required class="mt-1 block w-full rounded border-gray-300 p-2 border focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="toggleFormClassSelect(this.value, 'create_class_wrapper')">
+                    <select name="rola" id="role_select" required class="mt-1 block w-full rounded border-gray-300 p-2 border focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="handleRoleChange(this.value)">
                         <option value="nauczyciel">Nauczyciel</option>
                         <option value="rodzic">Rodzic</option>
                         <option value="uczen">Uczeń</option>
@@ -58,6 +58,15 @@
                         <option value="">-- Brak przypisania --</option>
                         @foreach($schoolClasses as $class)
                             <option value="{{ $class->id }}">{{ $class->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div id="parent-select-container" class="hidden">
+                    <label for="parent_id" class="block text-sm font-medium text-gray-700">Przypisz rodzica (opcjonalnie)</label>
+                    <select name="parent_id" id="parent_id" class="mt-1 block w-full rounded border-gray-300 p-2 border focus:outline-none">
+                        <option value="">-- Brak rodzica --</option>
+                        @foreach($parents as $parent)
+                            <option value="{{ $parent->id }}">{{ $parent->nazwisko }} {{ $parent->imie }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -105,14 +114,19 @@
                                         </span>
                                     </td>
                                     <td class="p-3 text-gray-500 whitespace-nowrap">
-                                        @if($user->rola === 'uczen' && $user->schoolClass)
-                                            Klasa: <span class="font-bold">{{ $user->schoolClass->name }}</span>
+                                        @if($user->rola === 'uczen')
+                                            @if($user->schoolClass)
+                                                Klasa: <span class="font-bold text-gray-700">{{ $user->schoolClass->name }}</span>
+                                            @endif
+                                            @if($user->parent)
+                                                <br><span class="text-xs text-gray-400">Rodzic: {{ $user->parent->nazwisko }} {{ $user->parent->imie }}</span>
+                                            @endif
                                         @else
                                             -
                                         @endif
                                     </td>
                                     <td class="p-3 text-right space-x-1 whitespace-nowrap">
-                                        <button onclick="openEditModal('{{ $user->id }}', '{{ $user->imie }}', '{{ $user->nazwisko }}', '{{ $user->email }}', '{{ $user->school_class_id }}', '{{ $user->rola }}')" class="text-blue-600 hover:text-blue-900"><i class="fa-solid fa-pen-to-square p-1"></i></button>
+                                        <button onclick="openEditModal('{{ $user->id }}', '{{ $user->imie }}', '{{ $user->nazwisko }}', '{{ $user->email }}', '{{ $user->school_class_id }}', '{{ $user->rola }}', '{{ $user->parent_id }}')" class="text-blue-600 hover:text-blue-900"><i class="fa-solid fa-pen-to-square p-1"></i></button>
                                         <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" class="inline" onsubmit="return confirm('Czy na pewno chcesz bezpowrotnie usunąć tego użytkownika?')">
                                             @csrf
                                             @method('DELETE')
@@ -160,6 +174,15 @@
                     @endforeach
                 </select>
             </div>
+            <div id="edit_parent_wrapper" class="hidden">
+                <label class="block text-sm font-medium text-gray-700">Przypisz rodzica</label>
+                <select id="edit_parent_id" name="parent_id" class="mt-1 block w-full rounded border-gray-300 p-2 border focus:outline-none">
+                    <option value="">-- Brak rodzica --</option>
+                    @foreach($parents as $parent)
+                        <option value="{{ $parent->id }}">{{ $parent->nazwisko }} {{ $parent->imie }}</option>
+                    @endforeach
+                </select>
+            </div>
             <div class="flex justify-end space-x-2 border-t pt-3">
                 <button type="button" onclick="closeEditModal()" class="bg-gray-300 text-gray-700 px-4 py-2 rounded font-semibold hover:bg-gray-400">Anuluj</button>
                 <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded font-semibold hover:bg-blue-700">Zapisz zmiany</button>
@@ -169,25 +192,40 @@
 </div>
 
 <script>
-    function toggleFormClassSelect(roleValue, wrapperId) {
-        const wrapper = document.getElementById(wrapperId);
+    function handleRoleChange(roleValue) {
+        const classWrapper = document.getElementById('create_class_wrapper');
+        const parentWrapper = document.getElementById('parent-select-container');
+        
         if (roleValue === 'uczen') {
-            wrapper.classList.remove('hidden');
+            classWrapper.classList.remove('hidden');
+            parentWrapper.classList.remove('hidden');
         } else {
-            wrapper.classList.add('hidden');
+            classWrapper.classList.add('hidden');
+            parentWrapper.classList.add('hidden');
+            document.getElementById('parent_id').value = '';
         }
     }
 
-    function openEditModal(id, firstName, lastName, email, classId, role) {
+    function openEditModal(id, firstName, lastName, email, classId, role, parentId) {
         document.getElementById('edit_form').action = '/admin/users/' + id;
         document.getElementById('edit_imie').value = firstName;
         document.getElementById('edit_nazwisko').value = lastName;
         document.getElementById('edit_email').value = email;
         
-        toggleFormClassSelect(role, 'edit_class_wrapper');
+        const classWrapper = document.getElementById('edit_class_wrapper');
+        const parentWrapper = document.getElementById('edit_parent_wrapper');
         
-        const classSelect = document.getElementById('edit_school_class_id');
-        classSelect.value = classId ? classId : '';
+        if (role === 'uczen') {
+            classWrapper.classList.remove('hidden');
+            parentWrapper.classList.remove('hidden');
+            document.getElementById('edit_school_class_id').value = classId ? classId : '';
+            document.getElementById('edit_parent_id').value = parentId ? parentId : '';
+        } else {
+            classWrapper.classList.add('hidden');
+            parentWrapper.classList.add('hidden');
+            document.getElementById('edit_school_class_id').value = '';
+            document.getElementById('edit_parent_id').value = '';
+        }
 
         document.getElementById('edit_modal').classList.remove('hidden');
         document.getElementById('edit_modal').classList.add('flex');

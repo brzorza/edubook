@@ -18,4 +18,9 @@ class Subject extends Model
     {
         return $this->hasMany(Lesson::class, 'subject_id');
     }
+
+    public function grades(): HasMany
+    {
+        return $this->hasMany(Grade::class, 'subject_id');
+    }
 }

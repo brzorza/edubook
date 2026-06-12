@@ -12,6 +12,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+use Carbon\Carbon;
+
 class StudentDashboardController extends Controller
 {
     private function getTargetStudent()
@@ -67,16 +69,37 @@ class StudentDashboardController extends Controller
     public function timetable()
     {
         $student = $this->getTargetStudent();
+
         if (!$student || !$student->school_class_id) {
-            return view('student.timetable', ['lessons' => [], 'student' => $student]);
+            return view('student.timetable', ['days' => []]);
         }
 
+        // Pobieramy lekcje i wprost sortujemy po dacie oraz rosnąco po numerze lekcji
         $lessons = Lesson::where('school_class_id', $student->school_class_id)
             ->with(['subject', 'teacher'])
-            ->orderBy('lesson_date')
-            ->orderBy('lesson_number')
+            ->orderBy('lesson_date', 'asc')
+            ->orderBy('lesson_number', 'asc')
             ->get();
 
-        return view('student.timetable', compact('lessons', 'student'));
+        $polishDays = [
+            1 => 'Poniedziałek',
+            2 => 'Wtorek',
+            3 => 'Środa',
+            4 => 'Czwartek',
+            5 => 'Piątek',
+            6 => 'Sobota',
+            7 => 'Niedziela',
+        ];
+
+        // Grupowanie: kluczem staje się format np. "Poniedziałek (15.06.2026)"
+        $days = $lessons->groupBy(function ($lesson) use ($polishDays) {
+            $carbonDate = Carbon::parse($lesson->lesson_date);
+            $dayName = $polishDays[$carbonDate->dayOfWeekIso] ?? 'Inny dzień';
+            $formattedDate = $carbonDate->format('d.m.Y');
+            
+            return "{$dayName} ({$formattedDate})";
+        });
+
+        return view('student.timetable', compact('days'));
     }
 }
